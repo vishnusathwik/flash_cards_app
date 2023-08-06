@@ -1,0 +1,74 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <link rel="icon" href="Page_icon.jpg" type="image/x-icon">
+    </head>
+    <body>
+        <div class="container">
+          <img src="flash_image.jpeg" id="img" class="logo" style="width: 40%; margin-left: auto; margin-right: auto;">
+            <div id="question-container" class="hide">
+              <text>Question: <text id="number001">0</text></text><br />
+              <text>Score: <text id="score001">0</text></text>
+              <hr />
+              <div id="question">Question</div>
+              <div id="answer-buttons" class="btn-grid">
+                <button class="btn">Answer 1</button>
+                <button class="btn">Answer 2</button>
+                <button class="btn">Answer 3</button>
+                <button class="btn">Answer 4</button>
+              </div>
+            </div>
+            <div id="result-container" class="result-container hide">
+              <table>
+                  <tr colspan=2>
+                    <th>RESULT :</th>
+                  </tr>
+                  <tr>
+                    <th>Username:</th>
+                    <td id="out_name"></td>
+                  </tr>
+                  <tr>
+                    <th>Total Questions:</th>
+                    <td id="number002">0</td>
+                  </tr>
+                  <tr>
+                    <th>Questions Answerd Correctly:</th>
+                    <td id="score003">0</td>
+                  </tr>
+                  <tr>
+                    <th>Questions Answerd Inorrectly:</th>
+                    <td id="score004">0</td>
+                  </tr>
+                  <tr>
+                    <th>Score:</th>
+                    <td id="score002">0</td>
+                  </tr>
+              </table>
+            </div>
+            <div class="controls">
+              <button id="start-btn" class="start-btn btn" onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Start</button>
+              <button id="next-btn" class="next-btn btn hide">Next</button>
+              <button id="repeat" class="repeat btn hide">Repeat</button>
+            </div>
+          </div>
+            <div id="id01" class="modal">
+                <form class="modal-content animate"  method="post">
+                  <div class="imgcontainer">
+                    <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">>></span>
+                    <img src="img_avatar.jpeg" alt="Avatar" class="avatar">
+                  </div>
+              
+                  <div class="container1">
+                    <label for="uname"><b>Username</b></label>
+                    <input type="text" placeholder="Enter Username" name="uname" required oninput="username(this.value)">
+                  </div>
+                </form>
+            </div>
+    </body>
+    <script src="main.js"></script>
+    <script>
+      function username(uname) {
+        document.getElementById("out_name").innerHTML = uname;
+      }
+    </script>
+</html>
