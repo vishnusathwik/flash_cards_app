@@ -63,7 +63,60 @@ Repeat the above steps for each CIS table, ensuring that all records are checked
 After completing all comparisons, the results table will contain the success or failure flags and any differences in the CLOB column for further review.
 
 
+import java.util.List;
 
+public class ApiDataFetcher {
 
-This approach should be clear and manageable for you to explain to your manager.
+    public static String fetchDataAsJson(List<String> fieldNames, Api api) {
+        StringBuilder jsonBuilder = new StringBuilder();
+        jsonBuilder.append("{");
 
+        for (int i = 0; i < fieldNames.size(); i++) {
+            String fieldName = fieldNames.get(i);
+            String methodName = "get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+
+            try {
+                // Use reflection to dynamically invoke the getter method
+                Object fieldValue = api.getClass().getMethod(methodName).invoke(api);
+                jsonBuilder.append("\"").append(fieldName).append("\":");
+
+                if (fieldValue instanceof String) {
+                    jsonBuilder.append("\"").append(fieldValue).append("\"");
+                } else {
+                    jsonBuilder.append(fieldValue);
+                }
+
+                if (i < fieldNames.size() - 1) {
+                    jsonBuilder.append(",");
+                }
+            } catch (Exception e) {
+                // Handle the exception gracefully (e.g., log the error)
+                System.err.println("Error fetching data for field: " + fieldName);
+            }
+        }
+
+        jsonBuilder.append("}");
+        return jsonBuilder.toString();
+    }
+
+    public static void main(String[] args) {
+        // Example usage
+        List<String> fieldNames = List.of("field1", "field2", "field3");
+        Api api = new Api(); // Replace with your actual Api instance
+
+        String jsonString = fetchDataAsJson(fieldNames, api);
+        System.out.println(jsonString);
+    }
+}
+
+class Api {
+    public String getField1() {
+        return "value1";
+    }
+
+    public int getField2() {
+        return 42;
+    }
+
+    // ... other getter methods for fields
+}
