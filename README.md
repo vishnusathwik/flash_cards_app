@@ -209,3 +209,20 @@ public class TestTransactionBatchService {
 
 }
 
+
+
+
+
+
+
+private TransactionBatchService createServiceWithMocks(TxnProperties.BatchProperties batchProperties) {
+    when(txnProperties.getBatch()).thenReturn(batchProperties); // Ensure TxnProperties returns the mock
+    return new TransactionBatchService(
+            txnProperties,
+            transactionHistoryService,
+            csqRepoService,
+            txnAuditLogService,
+            Optional.of(batchService)
+    );
+}
+
