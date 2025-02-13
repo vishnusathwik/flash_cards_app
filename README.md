@@ -120,3 +120,92 @@ class Api {
 
     // ... other getter methods for fields
 }
+
+
+
+
+@ExtendWith(MockitoExtension.class)
+public class TestTransactionBatchService {
+
+    // ... (Mock declarations as before)
+
+    private TransactionBatchService transactionBatchService;
+
+    @BeforeEach
+    public void setUp() {
+        // Common setup (if any)
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testConstructor_nullInterval() {
+        // Setup: Interval is null
+        TxnProperties.BatchProperties batchProperties = Mockito.mock(TxnProperties.BatchProperties.class);
+        when(txnProperties.getBatch()).thenReturn(batchProperties);
+        when(batchProperties.isEnabled()).thenReturn(true);
+        when(batchProperties.getDelay()).thenReturn("10s");
+        when(batchProperties.getInterval()).thenReturn(null); // Set interval to null
+        when(batchProperties.getCount()).thenReturn(10); // Or any value
+
+        transactionBatchService = createServiceWithMocks(batchProperties); // Should throw exception
+    }
+
+    @Test
+    public void testConstructor_batchCountZero() {
+        // Setup: Batch count is zero
+        TxnProperties.BatchProperties batchProperties = Mockito.mock(TxnProperties.BatchProperties.class);
+        when(txnProperties.getBatch()).thenReturn(batchProperties);
+        when(batchProperties.isEnabled()).thenReturn(true);
+        when(batchProperties.getDelay()).thenReturn("10s");
+        when(batchProperties.getInterval()).thenReturn("5m");
+        when(batchProperties.getCount()).thenReturn(0); // Set batch count to zero
+
+        transactionBatchService = createServiceWithMocks(batchProperties);
+
+        // Assertions: Verify default batch count is used
+        // assertEquals(25, getBatchCount(transactionBatchService)); // Assuming you have a getter
+
+        // You might also want to verify logging:
+        // ArgumentCaptor<String> logMessageCaptor = ArgumentCaptor.forClass(String.class);
+        // verify(logger).info(logMessageCaptor.capture());
+        // assertTrue(logMessageCaptor.getValue().contains("Using default batch count of 25"));
+    }
+
+
+        @Test
+    public void testConstructor_batchCountNegative() {
+        // Setup: Batch count is Negative
+        TxnProperties.BatchProperties batchProperties = Mockito.mock(TxnProperties.BatchProperties.class);
+        when(txnProperties.getBatch()).thenReturn(batchProperties);
+        when(batchProperties.isEnabled()).thenReturn(true);
+        when(batchProperties.getDelay()).thenReturn("10s");
+        when(batchProperties.getInterval()).thenReturn("5m");
+        when(batchProperties.getCount()).thenReturn(-1); // Set batch count to Negative
+
+        transactionBatchService = createServiceWithMocks(batchProperties);
+
+        // Assertions: Verify default batch count is used
+        // assertEquals(25, getBatchCount(transactionBatchService)); // Assuming you have a getter
+
+        // You might also want to verify logging:
+        // ArgumentCaptor<String> logMessageCaptor = ArgumentCaptor.forClass(String.class);
+        // verify(logger).info(logMessageCaptor.capture());
+        // assertTrue(logMessageCaptor.getValue().contains("Using default batch count of 25"));
+    }
+
+
+
+    // ... (Helper method createServiceWithMocks as before)
+
+    // Helper to access private field (if necessary) - Use with caution!
+    private int getBatchCount(TransactionBatchService service) {
+        try {
+            Field batchCountField = TransactionBatchService.class.getDeclaredField("batchCount");
+            batchCountField.setAccessible(true);
+            return (int) batchCountField.get(service);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException("Error accessing batchCount field", e);
+        }
+    }
+
+}
+
