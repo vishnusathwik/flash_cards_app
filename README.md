@@ -226,3 +226,88 @@ private TransactionBatchService createServiceWithMocks(TxnProperties.BatchProper
     );
 }
 
+
+
+
+
+
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class TransactionTypeCodeDescServiceTest {
+
+    @Mock
+    private DataSource dataSource;  // Mock DataSource
+
+    @Mock
+    private Connection connection;  // Mock Connection
+
+    @Mock
+    private Statement statement;  // Mock Statement
+
+    @Mock
+    private ResultSet resultSet;  // Mock ResultSet
+
+    @Mock
+    private StaticTransactionTypeCodeDescLoader staticTransactionTypeCodeDescLoader;
+
+    @InjectMocks
+    private TransactionTypeCodeDescService transactionTypeCodeDescService;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this);
+
+        // Mock database connection behavior
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(anyString())).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false);  // Simulate one row
+
+        when(resultSet.getString("SOURCE_VALUE")).thenReturn("SRC_VAL");
+        when(resultSet.getString("SOURCE_SYSTEM_CD")).thenReturn("SRC_SYS");
+        when(resultSet.getString("CASH_IND")).thenReturn("CASH_IND");
+        when(resultSet.getString("TXN_TYPE_DESC")).thenReturn("TRANSACTION_DESC");
+
+        // Initialize StaticTransactionTypeCodeDescLoader with a mock DataSource
+        staticTransactionTypeCodeDescLoader = new StaticTransactionTypeCodeDescLoader(dataSource);
+
+        // Inject manually to avoid constructor injection issues
+        transactionTypeCodeDescService = new TransactionTypeCodeDescService(staticTransactionTypeCodeDescLoader);
+    }
+
+    @Test
+    void testGetTransactionType_WithValidValues() {
+        // Arrange
+        String sourceValue = "SRC_VAL";
+        String sourceSystemCD = "SRC_SYS";
+        String cashIndicator = "CASH_IND";
+        String expectedTransactionType = "TRANSACTION_DESC";
+
+        // Mock the behavior of getValue method
+        when(staticTransactionTypeCodeDescLoader.getValue(sourceValue, sourceSystemCD, cashIndicator))
+                .thenReturn(expectedTransactionType);
+
+        // Act
+        String result = transactionTypeCodeDescService.getTransactionType(sourceValue, sourceSystemCD, cashIndicator);
+
+        // Assert
+        assertEquals(expectedTransactionType, result);
+        verify(staticTransactionTypeCodeDescLoader, times(1))
+                .getValue(sourceValue, sourceSystemCD, cashIndicator);
+    }
+}
