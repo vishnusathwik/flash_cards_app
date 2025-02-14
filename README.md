@@ -311,3 +311,75 @@ class TransactionTypeCodeDescServiceTest {
                 .getValue(sourceValue, sourceSystemCD, cashIndicator);
     }
 }
+
+
+
+
+
+
+
+
+
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Wrapper;
+
+import oracle.jdbc.OracleConnection;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class YourClassTest {  // Replace with actual class name
+
+    @Mock
+    private TxnProperties txnProperties; // Replace with actual type
+
+    @Mock
+    private Datasource datasource; // Replace with actual type
+
+    @Mock
+    private Notification notification; // Replace with actual type
+
+    @InjectMocks
+    private YourClass yourClass; // Replace with actual class name
+
+    @Mock
+    private Connection mockConnection;
+
+    @Mock
+    private OracleConnection mockOracleConnection;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        when(txnProperties.getDatasource()).thenReturn(datasource);
+        when(datasource.getNotification()).thenReturn(notification);
+        when(notification.getJidhcurl()).thenReturn("jdbc:oracle:thin:@//test-url");
+        when(notification.getUsername()).thenReturn("testUser");
+        when(notification.getPassword()).thenReturn("testPass");
+
+        when(mockConnection.unwrap(OracleConnection.class)).thenReturn(mockOracleConnection);
+    }
+
+    @Test
+    void testNewConnection() throws SQLException {
+        try (var mockedStatic = mockStatic(DriverManager.class)) {
+            mockedStatic.when(() -> DriverManager.getConnection(
+                anyString(), anyString(), anyString()))
+                .thenReturn(mockConnection);
+
+            OracleConnection result = yourClass.newConnection();
+
+            assertNotNull(result);
+            assertEquals(mockOracleConnection, result);
+        }
+    }
+}
