@@ -10,7 +10,7 @@ var a = document.getElementById('number001').innerText
 var b = document.getElementById('score001').innerText
 console.log(a)
 console.log(b)
-
+/*test*/
 let shuffledQuestions, currentQuestionIndex
 
 startButton.addEventListener('click', startGame)
